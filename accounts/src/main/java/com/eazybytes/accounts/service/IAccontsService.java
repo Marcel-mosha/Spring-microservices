@@ -1,0 +1,8 @@
+package com.eazybytes.accounts.service;
+
+import com.eazybytes.accounts.dto.CustomerDto;
+
+public interface IAccontsService {
+    void creteAccount(CustomerDto customerDto);
+    CustomerDto fetchAccount(String mobileNumber);
+}
