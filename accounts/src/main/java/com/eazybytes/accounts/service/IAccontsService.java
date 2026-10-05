@@ -5,4 +5,6 @@ import com.eazybytes.accounts.dto.CustomerDto;
 public interface IAccontsService {
     void creteAccount(CustomerDto customerDto);
     CustomerDto fetchAccount(String mobileNumber);
+    boolean updateAccount(CustomerDto customerDto);
+    boolean deleteAccount(String mobileNumber);
 }
