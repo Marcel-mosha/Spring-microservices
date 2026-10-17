@@ -1,0 +1,41 @@
+name: EasyBank microservices
+services:
+  account:
+    image: "marcell13/accounts:s4"
+    container_name: account_service
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+        - easybank
+  loans:
+    image: "marcell13/loans:s4"
+    container_name: loans_service
+    restart: unless-stopped
+    ports:
+      - "8090:8090"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+        - easybank
+  cards:
+    image: "marcell13/cards:s4"
+    container_name: cards_service
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    networks:
+        - easybank
+networks:
+  easybank:
+    driver: bridge
