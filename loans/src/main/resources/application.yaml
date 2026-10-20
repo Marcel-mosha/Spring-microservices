@@ -14,3 +14,17 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+  profiles:
+    active: prod
+
+build:
+  version: 3.0.0
+
+loans:
+  message: "Welcome to the loans Service"
+  contactDetails:
+    name: "loans Support"
+    email: "loans@example.com"
+  onCallSupport:
+    - 07222222334
+    - 07222222335
