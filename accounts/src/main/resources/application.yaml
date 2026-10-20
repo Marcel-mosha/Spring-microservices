@@ -17,3 +17,12 @@ spring:
 
 build:
   version: 1.0.0
+
+accounts:
+  message: "Welcome to the Accounts Service"
+  contactDetails:
+    name: "Accounts Support"
+    email: "accounts@example.com"
+  onCallSupport:
+    - 07222222334
+    - 07222222335

@@ -2,6 +2,7 @@ package com.eazybytes.accounts.controller;
 
 
 import com.eazybytes.accounts.constants.AccountsConstants;
+import com.eazybytes.accounts.dto.AccountsContactInfoDto;
 import com.eazybytes.accounts.dto.CustomerDto;
 import com.eazybytes.accounts.dto.ErrorResponseDto;
 import com.eazybytes.accounts.dto.ResponseDto;
@@ -44,6 +45,9 @@ public class AccountsController {
 
     @Autowired
     private Environment environment;
+
+    @Autowired
+    private AccountsContactInfoDto accountsContactInfoDto;
 
 
     @PostMapping("/create")
@@ -193,4 +197,25 @@ public class AccountsController {
                 .status(HttpStatus.OK)
                 .body(environment.getProperty("java.version"));
     }
+
+
+    @GetMapping("/contact-info")
+    @Operation(
+            summary = "Get contact information",
+            description = "This endpoint allows you to retrieve the contact information for the application."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Contact information retrieved successfully"),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error while retrieving Java version",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
+    public ResponseEntity<AccountsContactInfoDto> getContactInfo() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountsContactInfoDto);
+    }
+
+
 }
