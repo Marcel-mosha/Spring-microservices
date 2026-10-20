@@ -34,21 +34,19 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class AccountsController {
     private final IAccontsService iAccontsService;
+    private final Environment environment;
+    private final AccountsContactInfoDto accountsContactInfoDto;
 
 
-    public AccountsController(IAccontsService iAccontsService) {
+
+    public AccountsController(IAccontsService iAccontsService, Environment environment, AccountsContactInfoDto accountsContactInfoDto) {
+        this.environment = environment;
+        this.accountsContactInfoDto = accountsContactInfoDto;
         this.iAccontsService = iAccontsService;
     }
 
     @Value("${build.version}")
     private String buildVersion;
-
-    @Autowired
-    private Environment environment;
-
-    @Autowired
-    private AccountsContactInfoDto accountsContactInfoDto;
-
 
     @PostMapping("/create")
     @Operation(

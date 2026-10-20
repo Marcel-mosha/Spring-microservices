@@ -34,19 +34,17 @@ import org.springframework.web.bind.annotation.*;
 @Validated
 public class CardsController {
     private final ICardsService iCardsService;
+    private final Environment environment;
+    private final CardsContactInfoDto cardsContactInfoDto;
 
-    public CardsController(ICardsService iCardsService) {
+    public CardsController(ICardsService iCardsService, Environment environment, CardsContactInfoDto cardsContactInfoDto) {
         this.iCardsService = iCardsService;
+        this.environment = environment;
+        this.cardsContactInfoDto = cardsContactInfoDto;
     }
 
     @Value("${build.version}")
     private String buildVersion;
-
-    @Autowired
-    private Environment environment;
-
-    @Autowired
-    private CardsContactInfoDto cardsContactInfoDto;
 
 
     @PostMapping("/createCard")
