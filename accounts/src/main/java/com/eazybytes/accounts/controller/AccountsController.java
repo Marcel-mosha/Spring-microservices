@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,10 +28,17 @@ import org.springframework.web.bind.annotation.*;
 )
 @RestController
 @RequestMapping(path = "/api", produces = {MediaType.APPLICATION_JSON_VALUE})
-@AllArgsConstructor
 @Validated
 public class AccountsController {
-    private IAccontsService iAccontsService;
+    private final IAccontsService iAccontsService;
+
+
+    public AccountsController(IAccontsService iAccontsService) {
+        this.iAccontsService = iAccontsService;
+    }
+
+    @Value("${build.version}")
+    private String buildVersion;
 
 
     @PostMapping("/create")
@@ -139,5 +147,25 @@ public class AccountsController {
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_DELETE));
         }
+    }
+
+
+
+    @GetMapping("/build-version")
+    @Operation(
+            summary = "Get build version",
+            description = "This endpoint allows you to retrieve the current build version of the application."
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Build version retrieved successfully"),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error while retrieving build version",
+                    content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
+    })
+    public ResponseEntity<String> getBuildVersion() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(buildVersion);
     }
 }
