@@ -1,0 +1,11 @@
+build:
+  version: 2.0.0
+
+cards:
+  message: "Welcome to the UAT cards Service"
+  contactDetails:
+    name: "cards Support - UAT"
+    email: "cardsuat@example.com"
+  onCallSupport:
+    - 07222222350
+    - 07222222039
