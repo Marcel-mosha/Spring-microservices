@@ -1,0 +1,11 @@
+build:
+  version: 1.0.0
+
+loans:
+  message: "Welcome to the loans Service PROD"
+  contactDetails:
+    name: "loans Support prod"
+    email: "loansprod@example.com"
+  onCallSupport:
+    - 07222222334
+    - 07222222335

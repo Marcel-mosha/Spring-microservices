@@ -1,0 +1,11 @@
+build:
+  version: 1.0.0
+
+cards:
+  message: "Welcome to the cards Service PROD"
+  contactDetails:
+    name: "cards Support prod"
+    email: "cardsprod@example.com"
+  onCallSupport:
+    - 07222222331
+    - 07222222336

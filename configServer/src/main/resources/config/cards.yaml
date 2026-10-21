@@ -1,0 +1,11 @@
+build:
+  version: 3.0.0
+
+cards:
+  message: "Welcome to the cards Service"
+  contactDetails:
+    name: "cards Support"
+    email: "cards@example.com"
+  onCallSupport:
+    - 07222222334
+    - 07222222335
