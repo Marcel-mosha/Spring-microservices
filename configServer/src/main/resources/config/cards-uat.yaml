@@ -1,11 +1,11 @@
 build:
-  version: 2.0.0
+  version: 2.2.1
 
 cards:
-  message: "Welcome to the UAT cards Service"
+  message: "Welcome to the UAT cards Service from config server"
   contactDetails:
     name: "cards Support - UAT"
     email: "cardsuat@example.com"
   onCallSupport:
-    - 07222222350
-    - 07222222039
+    - "07222222350"
+    - "07222222039"

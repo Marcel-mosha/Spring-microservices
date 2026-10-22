@@ -7,5 +7,5 @@ accounts:
     name: "Accounts Support - UAT"
     email: "accountsuat@example.com"
   onCallSupport:
-    - 07222222330
-    - 07222222339
+    - "07222222330"
+    - "07222222339"

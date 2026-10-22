@@ -1,11 +1,11 @@
 build:
-  version: 1.0.0
+  version: 1.1.1
 
 accounts:
-  message: "Welcome to the Accounts Service PROD"
+  message: "Welcome to the Accounts Service PROD from config server"
   contactDetails:
     name: "Accounts Support prod"
     email: "accountsprod@example.com"
   onCallSupport:
-    - 07222222331
-    - 07222222336
+    - "07222222331"
+    - "07222222336"

@@ -1,6 +1,10 @@
 server:
   port: 8080
 spring:
+  application:
+    name: accounts
+  profiles:
+    active: prod
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
@@ -14,18 +18,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  profiles:
-    active: prod
 
+  config:
+    import: "optional:configserver:http://localhost:8071/"
 
-build:
-  version: 3.0.0
-
-accounts:
-  message: "Welcome to the Accounts Service"
-  contactDetails:
-    name: "Accounts Support"
-    email: "accounts@example.com"
-  onCallSupport:
-    - 07222222334
-    - 07222222335

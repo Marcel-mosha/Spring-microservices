@@ -1,6 +1,10 @@
 server:
   port: 9000
 spring:
+  application:
+    name: cards
+  profiles:
+    active: prod
   datasource:
     url: jdbc:h2:mem:testdb
     driverClassName: org.h2.Driver
@@ -15,19 +19,5 @@ spring:
       ddl-auto: update
     show-sql: true
 
-  profiles:
-    active:
-    - "prod"
-
-
-build:
-  version: 3.0.0
-
-cards:
-  message: "Welcome to the cards Service"
-  contactDetails:
-    name: "cards Support"
-    email: "cards@example.com"
-  onCallSupport:
-    - 07222222334
-    - 07222222335
+  config:
+    import: "optional:configserver:http://localhost:8071/"

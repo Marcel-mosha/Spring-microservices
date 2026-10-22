@@ -7,5 +7,5 @@ cards:
     name: "cards Support prod"
     email: "cardsprod@example.com"
   onCallSupport:
-    - 07222222331
-    - 07222222336
+    - "07222222331"
+    - "07222222336"

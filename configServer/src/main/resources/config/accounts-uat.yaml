@@ -1,11 +1,11 @@
 build:
-  version: 2.0.0
+  version: 2.2.1
 
 accounts:
-  message: "Welcome to the UAT Accounts Service"
+  message: "Welcome to the UAT Accounts Service from configured classpath of config server"
   contactDetails:
     name: "Accounts Support - UAT"
     email: "accountsuat@example.com"
   onCallSupport:
-    - 07222222330
-    - 07222222339
+    - "07222222330"
+    - "07222222339"

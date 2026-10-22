@@ -1,11 +1,11 @@
 build:
-  version: 3.0.0
+  version: 3.0.1
 
 loans:
-  message: "Welcome to the loans Service"
+  message: "Welcome to the loans Service from config server"
   contactDetails:
     name: "loans Support"
     email: "loans@example.com"
   onCallSupport:
-    - 07222222334
-    - 07222222335
+    - "07222222334"
+    - "07222222335"

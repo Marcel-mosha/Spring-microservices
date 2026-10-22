@@ -7,5 +7,5 @@ accounts:
     name: "Accounts Support prod"
     email: "accountsprod@example.com"
   onCallSupport:
-    - 07222222331
-    - 07222222336
+    - "07222222331"
+    - "07222222336"

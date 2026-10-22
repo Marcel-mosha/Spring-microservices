@@ -1,11 +1,11 @@
 build:
-  version: 2.0.0
+  version: 2.2.1
 
 loans:
-  message: "Welcome to the loans Service UAT"
+  message: "Welcome to the loans Service UAT from config server"
   contactDetails:
     name: "loans Support UAT"
     email: "loansuat@example.com"
   onCallSupport:
-    - 07222222334
-    - 07222222335
+    - "07222222334"
+    - "07222222335"

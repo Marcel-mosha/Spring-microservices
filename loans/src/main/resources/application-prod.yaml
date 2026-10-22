@@ -7,5 +7,5 @@ loans:
     name: "loans Support prod"
     email: "loansprod@example.com"
   onCallSupport:
-    - 07222222334
-    - 07222222335
+    - "07222222334"
+    - "07222222335"

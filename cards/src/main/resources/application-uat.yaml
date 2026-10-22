@@ -7,5 +7,5 @@ cards:
     name: "cards Support - UAT"
     email: "cardsuat@example.com"
   onCallSupport:
-    - 07222222350
-    - 07222222039
+    - "07222222350"
+    - "07222222039"

@@ -1,11 +1,11 @@
 build:
-  version: 3.0.0
+  version: 3.0.1
 
 cards:
-  message: "Welcome to the cards Service"
+  message: "Welcome to the cards Service from config server"
   contactDetails:
     name: "cards Support"
     email: "cards@example.com"
   onCallSupport:
-    - 07222222334
-    - 07222222335
+    - "07222222334"
+    - "07222222335"
