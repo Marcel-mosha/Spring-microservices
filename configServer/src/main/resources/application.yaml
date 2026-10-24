@@ -11,11 +11,15 @@ spring:
           #search-locations: classpath:/config
           #search-locations: file:///home/mr_cel13/spring/microservices/config
         git:
-          uri: "https://github.com/eazybytes/eazybytes-config.git"
+          uri: "git@github.com:Marcel-mosha/EasyBank-Config.git"
           default-label: main
           timeout: 5
           clone-on-start: true
           force-pull: true
 
+encrypt:
+  key: "857dc862b6f6b138652e23d23cd089e07d58e813c047eb6de7903b1f140f30fd"
+
 server:
   port: 8071
+
