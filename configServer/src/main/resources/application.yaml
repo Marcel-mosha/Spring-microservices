@@ -32,7 +32,15 @@ rabbitmq:
       web:
         exposure:
           include: "*"
-
+    health:
+      readinessstate:
+        enabled: true
+      livenessstate:
+        enabled: true
+    endpoint:
+      health:
+        probes:
+          enabled: true
 encrypt:
   key: "857dc862b6f6b138652e23d23cd089e07d58e813c047eb6de7903b1f140f30fd"
 

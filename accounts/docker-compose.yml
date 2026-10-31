@@ -1,7 +1,55 @@
 name: EasyBank microservices
 services:
+
+  rabbit:
+    image: "rabbitmq:4-management"
+    container_name: rabbit_service
+    restart: unless-stopped
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    networks:
+      - easybank
+
+  configserver:
+    image: "marcell13/configserver:s6"
+    container_name: configserver_service
+    restart: unless-stopped
+    ports:
+      - "8071:8071"
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+    volumes:
+      - ${HOME}/.ssh/easybank:/root/.ssh:ro
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8071 && printf 'GET /actuator/health/readiness HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && grep -q '\"status\":\"UP\"' <&3"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    depends_on:
+      rabbit:
+        condition: service_healthy
+
+    environment:
+        - SPRING_RABBITMQ_HOST=rabbit
+    networks:
+      - easybank
+
   account:
-    image: "marcell13/accounts:s4"
+    image: "marcell13/accounts:s6"
     container_name: account_service
     restart: unless-stopped
     ports:
@@ -10,10 +58,17 @@ services:
       resources:
         limits:
           memory: 700m
+    depends_on:
+      configserver:
+        condition: service_healthy
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbit
+      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8071
+      - SPRING_PROFILES_ACTIVE=default
     networks:
         - easybank
   loans:
-    image: "marcell13/loans:s4"
+    image: "marcell13/loans:s6"
     container_name: loans_service
     restart: unless-stopped
     ports:
@@ -22,10 +77,19 @@ services:
       resources:
         limits:
           memory: 700m
+
+    depends_on:
+      configserver:
+        condition: service_healthy
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbit
+      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8071/
+      - SPRING_PROFILES_ACTIVE=default
+
     networks:
         - easybank
   cards:
-    image: "marcell13/cards:s4"
+    image: "marcell13/cards:s6"
     container_name: cards_service
     restart: unless-stopped
     ports:
@@ -34,8 +98,17 @@ services:
       resources:
         limits:
           memory: 700m
+
+    depends_on:
+      configserver:
+        condition: service_healthy
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbit
+      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8071
+      - SPRING_PROFILES_ACTIVE=default
     networks:
         - easybank
+
 networks:
   easybank:
     driver: bridge
