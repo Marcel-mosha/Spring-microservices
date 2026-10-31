@@ -18,19 +18,18 @@ services:
       timeout: 5s
       retries: 10
       start_period: 5s
-    networks:
-      - easybank
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:?set RABBITMQ_DEFAULT_USER in the env file}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:?set RABBITMQ_DEFAULT_PASS in the env file}
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
   configserver:
-    image: "marcell13/configserver:s6"
+    image: "marcell13/configserver:${IMAGE_TAG:-${IMAGE_TAG:-${IMAGE_TAG:-s6}}}"
     container_name: configserver_service
-    restart: unless-stopped
     ports:
       - "8071:8071"
-    deploy:
-      resources:
-        limits:
-          memory: 700m
     volumes:
       - ${HOME}/.ssh/easybank:/root/.ssh:ro
     healthcheck:
@@ -42,72 +41,45 @@ services:
     depends_on:
       rabbit:
         condition: service_healthy
-
-    environment:
-        - SPRING_RABBITMQ_HOST=rabbit
-    networks:
-      - easybank
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
 
   account:
-    image: "marcell13/accounts:s6"
+    image: "marcell13/accounts:${IMAGE_TAG:-${IMAGE_TAG:-s6}}"
     container_name: account_service
-    restart: unless-stopped
     ports:
       - "8080:8080"
-    deploy:
-      resources:
-        limits:
-          memory: 700m
     depends_on:
       configserver:
         condition: service_healthy
-    environment:
-      - SPRING_RABBITMQ_HOST=rabbit
-      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8071
-      - SPRING_PROFILES_ACTIVE=default
-    networks:
-        - easybank
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
   loans:
-    image: "marcell13/loans:s6"
+    image: "marcell13/loans:${IMAGE_TAG:-${IMAGE_TAG:-s6}}"
     container_name: loans_service
-    restart: unless-stopped
     ports:
       - "8090:8090"
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-
     depends_on:
       configserver:
         condition: service_healthy
-    environment:
-      - SPRING_RABBITMQ_HOST=rabbit
-      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8071/
-      - SPRING_PROFILES_ACTIVE=default
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
 
-    networks:
-        - easybank
   cards:
-    image: "marcell13/cards:s6"
+    image: "marcell13/cards:${IMAGE_TAG:-${IMAGE_TAG:-s6}}"
     container_name: cards_service
-    restart: unless-stopped
     ports:
       - "9000:9000"
-    deploy:
-      resources:
-        limits:
-          memory: 700m
-
     depends_on:
       configserver:
         condition: service_healthy
-    environment:
-      - SPRING_RABBITMQ_HOST=rabbit
-      - SPRING_CONFIG_IMPORT=configserver:http://configserver:8071
-      - SPRING_PROFILES_ACTIVE=default
-    networks:
-        - easybank
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
 
 networks:
   easybank:
