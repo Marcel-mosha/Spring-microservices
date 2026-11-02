@@ -3,6 +3,7 @@ services:
     networks:
       - easybank
 
+
   microservice-base-config:
     extends:
       service: network-deploy-service

@@ -67,7 +67,7 @@
 				<version>3.5.2</version>
 				<configuration>
 					<to>
-						<image>marcell13/configserver:s6</image>
+						<image>marcell13/configserver:s7</image>
 					</to>
 				</configuration>
 			</plugin>
