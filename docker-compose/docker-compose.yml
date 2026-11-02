@@ -25,8 +25,44 @@ services:
       file: common-config.yml
       service: network-deploy-service
 
+  accountsdb:
+    container_name: accountsdb
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: accountsdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+    volumes:
+      - "/home/mr_cel13/spring/microservices/accounts-data:/var/lib/mysql"
+
+  cardsdb:
+    container_name: cardsdb
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: cardsdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+    volumes:
+      - "/home/mr_cel13/spring/microservices/cards-data:/var/lib/mysql"
+
+  loansdb:
+    container_name: loansdb
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_DATABASE: loansdb
+    extends:
+      file: common-config.yml
+      service: microservice-db-config
+    volumes:
+      - "/home/mr_cel13/spring/microservices/loans-data:/var/lib/mysql"
+
   configserver:
-    image: "marcell13/configserver:${IMAGE_TAG:-${IMAGE_TAG:-${IMAGE_TAG:-s6}}}"
+    image: "marcell13/configserver:${IMAGE_TAG:-${IMAGE_TAG:-${IMAGE_TAG:-s7}}}"
     container_name: configserver_service
     ports:
       - "8071:8071"
@@ -46,36 +82,48 @@ services:
       service: microservice-base-config
 
   account:
-    image: "marcell13/accounts:${IMAGE_TAG:-${IMAGE_TAG:-s6}}"
+    image: "marcell13/accounts:${IMAGE_TAG:-${IMAGE_TAG:-s7}}"
     container_name: account_service
     ports:
       - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://accountsdb:3306/accountsdb"
     depends_on:
       configserver:
+        condition: service_healthy
+      accountsdb:
         condition: service_healthy
     extends:
       file: common-config.yml
       service: microservice-configserver-config
 
   loans:
-    image: "marcell13/loans:${IMAGE_TAG:-${IMAGE_TAG:-s6}}"
+    image: "marcell13/loans:${IMAGE_TAG:-${IMAGE_TAG:-s7}}"
     container_name: loans_service
     ports:
       - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://loansdb:3306/loansdb"
     depends_on:
       configserver:
+        condition: service_healthy
+      loansdb:
         condition: service_healthy
     extends:
       file: common-config.yml
       service: microservice-configserver-config
 
   cards:
-    image: "marcell13/cards:${IMAGE_TAG:-${IMAGE_TAG:-s6}}"
+    image: "marcell13/cards:${IMAGE_TAG:-${IMAGE_TAG:-s7}}"
     container_name: cards_service
     ports:
       - "9000:9000"
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:mysql://cardsdb:3306/cardsdb"
     depends_on:
       configserver:
+        condition: service_healthy
+      cardsdb:
         condition: service_healthy
     extends:
       file: common-config.yml
