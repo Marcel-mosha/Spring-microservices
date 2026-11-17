@@ -28,6 +28,7 @@ SERVICES=(
     "loans"
     "configServer"
     "eurekaserver"
+    "gatewayserver"
 )
 
 SUCCESSFUL=()
