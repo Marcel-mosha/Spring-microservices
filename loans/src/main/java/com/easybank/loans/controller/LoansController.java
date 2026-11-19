@@ -232,6 +232,7 @@ public class LoansController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     public ResponseEntity<LoansContactInfoDto> getContactInfo() {
+        log.debug("Invoked Loans Contact info API.");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(loansContactInfoDto);
