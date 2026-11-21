@@ -7,6 +7,7 @@ import com.easybank.cards.dto.CardsDto;
 import com.easybank.cards.dto.ErrorResponseDto;
 import com.easybank.cards.dto.ResponseDto;
 import com.easybank.cards.service.ICardsService;
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -171,6 +172,7 @@ public class CardsController {
         }
     }
 
+    @Bulkhead(name = "getBuildVersion", fallbackMethod = "getBuildVersionFallback")
     @GetMapping("/build-version")
     @Operation(
             summary = "Get build version",
@@ -183,10 +185,17 @@ public class CardsController {
                     description = "Internal server error while retrieving build version",
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
-    public ResponseEntity<String> getBuildVersion() {
+    public ResponseEntity<String> getBuildVersion() throws InterruptedException {
+        log.debug("getBuildInfo() method Invoked");
+        Thread.sleep(6000); // simulate a slow call so concurrency limit is easy to hit
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(buildVersion);
+    }
+    public ResponseEntity<String> getBuildVersionFallback(Throwable throwable) {
+        log.debug("getBuildVersionFallback() method Invoked");
+        return ResponseEntity.status(HttpStatus.OK)
+                .body("GetBuildVersion API Fallback - Too many concurrent requests, please try again later!!!");
     }
 
 
