@@ -180,7 +180,7 @@ public class AccountsController {
 
 
 
-    @RateLimiter(name = "getJavaVersion", fallbackMethod = "getJavaVersionFallback")
+    @RateLimiter(name= "getJavaVersion",fallbackMethod = "getJavaVersionFallback")
     @GetMapping("/java-version")
     @Operation(
             summary = "Get Java version",
@@ -196,13 +196,13 @@ public class AccountsController {
     public ResponseEntity<String> getJavaVersion() {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(environment.getProperty("java.version"));
+                .body(environment.getProperty("JAVA_HOME"));
     }
 
     public ResponseEntity<String> getJavaVersionFallback(Throwable throwable) {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body("Too many requests, please try again later.");
+                .body("Java 25");
     }
 
 
