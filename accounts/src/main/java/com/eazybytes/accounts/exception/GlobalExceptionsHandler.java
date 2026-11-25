@@ -1,6 +1,7 @@
 package com.eazybytes.accounts.exception;
 
 import com.eazybytes.accounts.dto.ErrorResponseDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -18,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionsHandler extends ResponseEntityExceptionHandler {
     @Override
@@ -31,6 +33,7 @@ public class GlobalExceptionsHandler extends ResponseEntityExceptionHandler {
                 String validationMsg = error.getDefaultMessage();
                 validationErrors.put(fieldName, validationMsg);
             });
+            log.warn("Validation failed for {}: {}", request.getDescription(false), validationErrors);
             return new ResponseEntity<>(validationErrors, HttpStatus.BAD_REQUEST);
         }
 
@@ -39,6 +42,7 @@ public class GlobalExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(CustomerAlreadyExistException.class)
     public ResponseEntity<ErrorResponseDto> handleCustomerAlreadyExistsException(CustomerAlreadyExistException exception,
                                                                                  WebRequest webRequest){
+        log.warn("Customer already exists for {}: {}", webRequest.getDescription(false), exception.getMessage());
         ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
                 webRequest.getDescription(false),
                 HttpStatus.BAD_REQUEST,
@@ -51,6 +55,7 @@ public class GlobalExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException exception,
                                                                                  WebRequest webRequest){
+        log.warn("Resource not found for {}: {}", webRequest.getDescription(false), exception.getMessage());
         ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
                 webRequest.getDescription(false),
                 HttpStatus.NOT_FOUND,
@@ -63,6 +68,7 @@ public class GlobalExceptionsHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleGlobalException(Exception exception,
                                                                             WebRequest webRequest){
+        log.error("Unexpected error while processing {}", webRequest.getDescription(false), exception);
         ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
                 webRequest.getDescription(false),
                 HttpStatus.INTERNAL_SERVER_ERROR,

@@ -9,12 +9,14 @@ import com.easybank.cards.mapper.CardsMapper;
 import com.easybank.cards.repository.CardsRepository;
 import com.easybank.cards.service.ICardsService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Random;
 
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class CardsServiceImpl implements ICardsService {
@@ -27,10 +29,12 @@ public class CardsServiceImpl implements ICardsService {
         // Implementation for creating a card
         Optional<Cards> optionalCards = cardsRepository.findByMobileNumber(mobileNumber);
         if (optionalCards.isPresent()) {
+            log.warn("Card already registered with mobileNumber: {}", mobileNumber);
             throw new CardAlreadyExistsException("Card already exists for mobile number: " + mobileNumber);
         }
         // Create a new card
-        cardsRepository.save(createNewCard(mobileNumber));
+        Cards savedCard = cardsRepository.save(createNewCard(mobileNumber));
+        log.debug("Created cardNumber: {} for mobileNumber: {}", savedCard.getCardNumber(), mobileNumber);
     }
 
     private Cards createNewCard(String mobileNumber) {
@@ -49,6 +53,7 @@ public class CardsServiceImpl implements ICardsService {
     @Override
     public CardsDto getCard(String mobileNumber) {
         // Implementation for retrieving a card
+        log.debug("Looking up card for mobileNumber: {}", mobileNumber);
         Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumber)
         );
@@ -64,6 +69,7 @@ public class CardsServiceImpl implements ICardsService {
 
         CardsMapper.mapToCards(cardsDto, cards);
         cardsRepository.save(cards);
+        log.debug("Updated cardNumber: {}", cards.getCardNumber());
         return true;
     }
 
@@ -74,6 +80,7 @@ public class CardsServiceImpl implements ICardsService {
                 () -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumber)
         );
         cardsRepository.delete(cards);
+        log.debug("Deleted cardNumber: {} for mobileNumber: {}", cards.getCardNumber(), mobileNumber);
         return true;
     }
 }

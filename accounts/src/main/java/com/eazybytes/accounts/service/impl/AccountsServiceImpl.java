@@ -13,12 +13,14 @@ import com.eazybytes.accounts.repository.AccountsRepository;
 import com.eazybytes.accounts.repository.CustomerRepository;
 import com.eazybytes.accounts.service.IAccontsService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Random;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class AccountsServiceImpl  implements IAccontsService {
@@ -30,10 +32,12 @@ public class AccountsServiceImpl  implements IAccontsService {
         Customer customer = CustomerMapper.mapToCustomer(customerDto, new Customer());
         Optional<Customer> optionalCustomer = customerRepository.findByMobileNumber(customerDto.getMobileNumber());
         if (optionalCustomer.isPresent()) {
+            log.warn("Customer already registered with mobileNumber: {}", customerDto.getMobileNumber());
             throw new CustomerAlreadyExistException("Customer already exists with the given mobile number");
         }
         Customer savedCustomer = customerRepository.save(customer);
-        accountsRepository.save(createNewAccount(savedCustomer));
+        Accounts savedAccount = accountsRepository.save(createNewAccount(savedCustomer));
+        log.debug("Created customerId: {} with accountNumber: {}", savedCustomer.getCustomerId(), savedAccount.getAccountNumber());
 
     }
     private Accounts createNewAccount(Customer customer) {
@@ -49,6 +53,7 @@ public class AccountsServiceImpl  implements IAccontsService {
 
     @Override
     public CustomerDto fetchAccount(String mobileNumber) {
+        log.debug("Looking up customer and account for mobileNumber: {}", mobileNumber);
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
         );
@@ -77,7 +82,10 @@ public class AccountsServiceImpl  implements IAccontsService {
             );
             CustomerMapper.mapToCustomer(customerDto,customer);
             customerRepository.save(customer);
+            log.debug("Updated accountNumber: {} and customerId: {}", accounts.getAccountNumber(), customerId);
             isUpdated = true;
+        } else {
+            log.warn("Update request has no account details for mobileNumber: {}", customerDto.getMobileNumber());
         }
         return  isUpdated;
     }
@@ -89,6 +97,7 @@ public class AccountsServiceImpl  implements IAccontsService {
        );
        accountsRepository.deleteByCustomerId(customer.getCustomerId());
        customerRepository.deleteById(customer.getCustomerId());
+       log.debug("Deleted customerId: {} and its account", customer.getCustomerId());
        return true;
 
     }

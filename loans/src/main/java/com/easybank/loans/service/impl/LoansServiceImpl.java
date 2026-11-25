@@ -9,12 +9,14 @@ import com.easybank.loans.mapper.LoansMapper;
 import com.easybank.loans.repository.LoansRepository;
 import com.easybank.loans.service.ILoansService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Random;
 
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class LoansServiceImpl implements ILoansService {
@@ -28,9 +30,11 @@ public class LoansServiceImpl implements ILoansService {
     public void createLoan(String mobileNumber) {
         Optional<Loans> optionalLoans= loansRepository.findByMobileNumber(mobileNumber);
         if(optionalLoans.isPresent()){
+            log.warn("Loan already registered with mobileNumber: {}", mobileNumber);
             throw new LoanAlreadyExistsException("Loan already registered with given mobileNumber "+mobileNumber);
         }
-        loansRepository.save(createNewLoan(mobileNumber));
+        Loans savedLoan = loansRepository.save(createNewLoan(mobileNumber));
+        log.debug("Created loanNumber: {} for mobileNumber: {}", savedLoan.getLoanNumber(), mobileNumber);
     }
 
     /**
@@ -56,6 +60,7 @@ public class LoansServiceImpl implements ILoansService {
      */
     @Override
     public LoansDto fetchLoan(String mobileNumber) {
+        log.debug("Looking up loan for mobileNumber: {}", mobileNumber);
         Loans loans = loansRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Loan", "mobileNumber", mobileNumber)
         );
@@ -73,6 +78,7 @@ public class LoansServiceImpl implements ILoansService {
                 () -> new ResourceNotFoundException("Loan", "LoanNumber", loansDto.getLoanNumber()));
         LoansMapper.mapToLoans(loansDto, loans);
         loansRepository.save(loans);
+        log.debug("Updated loanNumber: {}", loans.getLoanNumber());
         return  true;
     }
 
@@ -86,6 +92,7 @@ public class LoansServiceImpl implements ILoansService {
                 () -> new ResourceNotFoundException("Loan", "mobileNumber", mobileNumber)
         );
         loansRepository.deleteById(loans.getLoanId());
+        log.debug("Deleted loanNumber: {} for mobileNumber: {}", loans.getLoanNumber(), mobileNumber);
         return true;
     }
 

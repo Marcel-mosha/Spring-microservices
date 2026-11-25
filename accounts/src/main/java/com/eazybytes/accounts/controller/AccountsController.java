@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -26,6 +27,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+
+@Slf4j
 @Tag(
         name = "Accounts CRUD Operations",
         description = "This API allows you to perform CRUD operations on customer accounts."
@@ -62,7 +65,9 @@ public class AccountsController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     public ResponseEntity<ResponseDto> createAccount(@Valid @RequestBody CustomerDto customerDto) {
+        log.info("Creating a new customer account with mobile number: {}", customerDto.getMobileNumber());
         iAccontsService.creteAccount(customerDto);
+        log.info("Customer account created successfully for mobile number: {}", customerDto.getMobileNumber());
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseDto(AccountsConstants.STATUS_201, AccountsConstants.MESSAGE_201));
@@ -89,7 +94,9 @@ public class AccountsController {
     public ResponseEntity<CustomerDto> fetchAccountDetails(@RequestParam
                                                                @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
                                                                String mobileNumber) {
+        log.info("Fetching account details for mobile number: {}", mobileNumber);
         CustomerDto customerDto = iAccontsService.fetchAccount(mobileNumber);
+        log.info("Account details fetched successfully for mobile number: {}", mobileNumber);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(customerDto);
@@ -115,12 +122,15 @@ public class AccountsController {
            )
     })
     public ResponseEntity<ResponseDto> updateAccountDetails(@Valid @RequestBody CustomerDto customerDto){
+        log.info("Updating account details for mobile number: {}", customerDto.getMobileNumber());
         boolean isUpdated = iAccontsService.updateAccount(customerDto);
         if(isUpdated){
+            log.info("Account details updated successfully for mobile number: {}", customerDto.getMobileNumber());
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
         }else{
+            log.warn("Account update failed for mobile number: {}", customerDto.getMobileNumber());
             return ResponseEntity
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_UPDATE));
@@ -145,12 +155,15 @@ public class AccountsController {
     public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam
                                                                 @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
                                                                 String mobileNumber) {
+        log.info("Deleting account details for mobile number: {}", mobileNumber);
         boolean isDeleted = iAccontsService.deleteAccount(mobileNumber);
         if(isDeleted){
+            log.info("Account details deleted successfully for mobile number: {}", mobileNumber);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseDto(AccountsConstants.STATUS_200, AccountsConstants.MESSAGE_200));
         }else{
+            log.warn("Account deletion failed for mobile number: {}", mobileNumber);
             return ResponseEntity
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(AccountsConstants.STATUS_417, AccountsConstants.MESSAGE_417_DELETE));
@@ -172,6 +185,7 @@ public class AccountsController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     public ResponseEntity<String> getBuildVersion() {
+        log.debug("Invoked getBuildVersion() API");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(buildVersion);
@@ -194,12 +208,14 @@ public class AccountsController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     public ResponseEntity<String> getJavaVersion() {
+        log.debug("Invoked getJavaVersion() API");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(environment.getProperty("JAVA_HOME"));
     }
 
     public ResponseEntity<String> getJavaVersionFallback(Throwable throwable) {
+        log.warn("getJavaVersion() rate limit exceeded, returning fallback: {}", throwable.getMessage());
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Java 25");
@@ -219,6 +235,7 @@ public class AccountsController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     public ResponseEntity<AccountsContactInfoDto> getContactInfo() {
+        log.debug("Invoked getContactInfo() API");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(accountsContactInfoDto);

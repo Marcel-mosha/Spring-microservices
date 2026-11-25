@@ -68,7 +68,9 @@ public class CardsController {
     public ResponseEntity<ResponseDto> createCard(@Valid @RequestParam
                                                   @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
                                                   String mobileNumber) {
+        log.info("Creating a new card for mobile number: {}", mobileNumber);
         iCardsService.createCard(mobileNumber);
+        log.info("Card created successfully for mobile number: {}", mobileNumber);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseDto(CardsConstants.STATUS_201, CardsConstants.MESSAGE_201));
@@ -96,7 +98,9 @@ public class CardsController {
                                                      @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                      String mobileNumber) {
         log.debug("eazyBank-correlation-id found: {} ", correlationId);
+        log.info("Fetching card details for mobile number: {}", mobileNumber);
         CardsDto cardsDto = iCardsService.getCard(mobileNumber);
+        log.info("Card details fetched successfully for mobile number: {}", mobileNumber);
         return ResponseEntity.status(HttpStatus.OK).body(cardsDto);
     }
 
@@ -123,12 +127,15 @@ public class CardsController {
     }
     )
     public ResponseEntity<ResponseDto> updateCardDetails(@Valid @RequestBody CardsDto cardsDto) {
+        log.info("Updating card details for card number: {}", cardsDto.getCardNumber());
         boolean isUpdated = iCardsService.updateCard(cardsDto);
         if(isUpdated) {
+            log.info("Card details updated successfully for card number: {}", cardsDto.getCardNumber());
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseDto(CardsConstants.STATUS_200, CardsConstants.MESSAGE_200));
         }else{
+            log.warn("Card update failed for card number: {}", cardsDto.getCardNumber());
             return ResponseEntity
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(CardsConstants.STATUS_417, CardsConstants.MESSAGE_417_UPDATE));
@@ -160,12 +167,15 @@ public class CardsController {
     public ResponseEntity<ResponseDto> deleteCardDetails(@RequestParam
                                                          @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                          String mobileNumber) {
+        log.info("Deleting card details for mobile number: {}", mobileNumber);
         boolean isDeleted = iCardsService.deleteCard(mobileNumber);
         if(isDeleted) {
+            log.info("Card details deleted successfully for mobile number: {}", mobileNumber);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseDto(CardsConstants.STATUS_200, CardsConstants.MESSAGE_200));
         }else{
+            log.warn("Card deletion failed for mobile number: {}", mobileNumber);
             return ResponseEntity
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(CardsConstants.STATUS_417, CardsConstants.MESSAGE_417_DELETE));
@@ -193,7 +203,7 @@ public class CardsController {
                 .body(buildVersion);
     }
     public ResponseEntity<String> getBuildVersionFallback(Throwable throwable) {
-        log.debug("getBuildVersionFallback() method Invoked");
+        log.warn("getBuildVersion() bulkhead full, returning fallback: {}", throwable.getMessage());
         return ResponseEntity.status(HttpStatus.OK)
                 .body("GetBuildVersion API Fallback - Too many concurrent requests, please try again later!!!");
     }
@@ -213,6 +223,7 @@ public class CardsController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     public ResponseEntity<String> getJavaVersion() {
+        log.debug("Invoked getJavaVersion() API");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(environment.getProperty("java.version"));
@@ -232,6 +243,7 @@ public class CardsController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     public ResponseEntity<CardsContactInfoDto> getContactInfo() {
+        log.debug("Invoked getContactInfo() API");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(cardsContactInfoDto);

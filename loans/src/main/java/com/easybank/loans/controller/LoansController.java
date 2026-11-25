@@ -70,7 +70,9 @@ public class LoansController {
     public ResponseEntity<ResponseDto> createLoan(@RequestParam
                                                   @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                   String mobileNumber) {
+        log.info("Creating a new loan for mobile number: {}", mobileNumber);
         iLoansService.createLoan(mobileNumber);
+        log.info("Loan created successfully for mobile number: {}", mobileNumber);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseDto(LoansConstants.STATUS_201, LoansConstants.MESSAGE_201));
@@ -101,7 +103,9 @@ public class LoansController {
                                                      @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                      String mobileNumber) {
         log.debug("eazyBank-correlation-id found: {} ", correlationId);
+        log.info("Fetching loan details for mobile number: {}", mobileNumber);
         LoansDto loansDto = iLoansService.fetchLoan(mobileNumber);
+        log.info("Loan details fetched successfully for mobile number: {}", mobileNumber);
         return ResponseEntity.status(HttpStatus.OK).body(loansDto);
     }
 
@@ -129,12 +133,15 @@ public class LoansController {
     )
     @PutMapping("/updateLoan")
     public ResponseEntity<ResponseDto> updateLoanDetails(@Valid @RequestBody LoansDto loansDto) {
+        log.info("Updating loan details for loan number: {}", loansDto.getLoanNumber());
         boolean isUpdated = iLoansService.updateLoan(loansDto);
         if(isUpdated) {
+            log.info("Loan details updated successfully for loan number: {}", loansDto.getLoanNumber());
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseDto(LoansConstants.STATUS_200, LoansConstants.MESSAGE_200));
         }else{
+            log.warn("Loan update failed for loan number: {}", loansDto.getLoanNumber());
             return ResponseEntity
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(LoansConstants.STATUS_417, LoansConstants.MESSAGE_417_UPDATE));
@@ -167,12 +174,15 @@ public class LoansController {
     public ResponseEntity<ResponseDto> deleteLoanDetails(@RequestParam
                                                          @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
                                                          String mobileNumber) {
+        log.info("Deleting loan details for mobile number: {}", mobileNumber);
         boolean isDeleted = iLoansService.deleteLoan(mobileNumber);
         if(isDeleted) {
+            log.info("Loan details deleted successfully for mobile number: {}", mobileNumber);
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseDto(LoansConstants.STATUS_200, LoansConstants.MESSAGE_200));
         }else{
+            log.warn("Loan deletion failed for mobile number: {}", mobileNumber);
             return ResponseEntity
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(LoansConstants.STATUS_417, LoansConstants.MESSAGE_417_DELETE));
@@ -193,6 +203,7 @@ public class LoansController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     public ResponseEntity<String> getBuildVersion() {
+        log.debug("Invoked getBuildVersion() API");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(buildVersion);
@@ -213,6 +224,7 @@ public class LoansController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     public ResponseEntity<String> getJavaVersion() {
+        log.debug("Invoked getJavaVersion() API");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(environment.getProperty("java.version"));
@@ -232,7 +244,7 @@ public class LoansController {
                     content = @Content(schema = @Schema(implementation = ErrorResponseDto.class)))
     })
     public ResponseEntity<LoansContactInfoDto> getContactInfo() {
-        log.debug("Invoked Loans Contact info API.");
+        log.debug("Invoked getContactInfo() API");
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(loansContactInfoDto);
