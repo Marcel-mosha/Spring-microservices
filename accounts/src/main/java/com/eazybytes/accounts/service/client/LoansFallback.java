@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @HttpServiceFallback(value = LoansFallback.class, group = "loans")
 public class LoansFallback {
-    public ResponseEntity<LoansDto> fetchLoanDetails(String correlationId, String mobileNumber) {
+    public ResponseEntity<LoansDto> fetchLoanDetails(String mobileNumber) {
         log.warn("Loans service unavailable, fallback invoked for mobileNumber: {}", mobileNumber);
         return null;
     }
